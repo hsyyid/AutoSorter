@@ -1,3 +1,3 @@
 exports.helloHttp = (req, res) => {
-  res.send(`Hello ${(req.query)}`);
+  res.send(`Hello ${(req.query.query)}`);
 }
