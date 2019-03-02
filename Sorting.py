@@ -2,6 +2,10 @@ import string
 
 from sklearn.cluster import KMeans
 from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
+import nltk
+
+nltk.download('stopwords')
+
 from nltk.corpus import stopwords
 
 en_stopwords = stopwords.words('english')
