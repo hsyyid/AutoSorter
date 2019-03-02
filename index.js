@@ -2,7 +2,7 @@ const {google} = require('googleapis');
 
 exports.helloHttp = (req, res) => {
   ans = "";
-  for (var property in object) {
+  for (var property in req) {
     if (object.hasOwnProperty(property)) {
         ans += property;
         ans += "\n";
