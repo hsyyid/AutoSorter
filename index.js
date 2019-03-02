@@ -1,13 +1,6 @@
 const {google} = require('googleapis');
 
 exports.helloHttp = (req, res) => {
-  ans = "";
-  for (var property in req.body) {
-    if (req.body.hasOwnProperty(property)) {
-        ans += property;
-        ans += "\n";
-    }
-  }
   // res.send(ans);
   // const {token} = req.body;
   // TODO: Get OAuth2 token
@@ -38,9 +31,17 @@ function listFiles(auth) {
         ans.ids.push(file.id);
         ans.mimeType.push(file.mimeType);
         // I'll finish it eventually
-        /* const content = files.export({
+        const content = files.export({
           fileId: file.id,
-        }) */
+          mimeType: field.mimeType
+        }).then(function(success)) {
+          console.log(`Successfully exported from ${file.name}`);
+          console.log(success);
+          ans.content.push(success);
+        }, function(fail) {
+          console.log(`Failed to export from ${file.name}`);
+          console.log(fail.result.error.message);
+        }
       });
     }
     return ans;
