@@ -1,3 +1,6 @@
+import Sorting
+
+
 def sort(request):
     """Responds to any HTTP request.
     Args:
@@ -8,10 +11,7 @@ def sort(request):
         `make_response <http://flask.pocoo.org/docs/1.0/api/#flask.Flask.make_response>`.
     """
     request_json = request.get_json()
-    if request.args and 'message' in request.args:
-        return request.args.get('message')
-    elif request_json and 'message' in request_json:
-        return request_json['message']
+    if request.args and 'test' in request.args:
+        return [1, 2, 3]
     else:
-        return f'Hello World!'
-    
+        return Sorting.analyze(request_json['message'], request_json['subjects'])
