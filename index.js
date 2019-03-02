@@ -11,11 +11,11 @@ exports.helloHttp = (req, res) => {
   // res.send(ans);
   // const {token} = req.body;
   // TODO: Get OAuth2 token
-  res.send(listFiles(req.body));
+  res.send(JSON.stringify(listFiles(req.body)));
 }
 
 /**
- * Lists the names and IDs of up to 10 files.
+ * Lists the names and IDs of up to 100 files.
  * @param {google.auth.OAuth2} auth An authorized OAuth2 client.
  */
 function listFiles(auth) {
@@ -25,15 +25,23 @@ function listFiles(auth) {
     fields: 'nextPageToken, files(id, name, mimeType)',
   }, (err, res) => {
     if (err) res.send('The API returned an error: ' + err);
-    let ans = "";
+    let ans = {};
     const files = res.data.files;
     if (files.length) {
-      ans += "Files:\n";
+      ans.length = files.length;
+      ans.titles = [];
+      ans.ids = [];
+      ans.mimeType = [];
+      ans.content = [];
       files.map((file) => {
-        ans += `${file.name} (${file.id}) - ${file.mimeType}\n`
+        ans.titles.push(file.name);
+        ans.ids.push(file.id);
+        ans.mimeType.push(file.mimeType);
+        // I'll finish it eventually
+        /* const content = files.export({
+          fileId: file.id,
+        }) */
       });
-    } else {
-      ans += "No files found.";
     }
     return ans;
   });
