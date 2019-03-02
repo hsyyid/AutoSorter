@@ -8,10 +8,10 @@ exports.helloHttp = (req, res) => {
         ans += "\n";
     }
   }
-  res.send(ans);
+  // res.send(ans);
   // const {token} = req.body;
   // TODO: Get OAuth2 token
-  // res.send(listFiles(token));
+  res.send(listFiles(req.body));
 }
 
 /**
