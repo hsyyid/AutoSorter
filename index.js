@@ -2,8 +2,8 @@ const {google} = require('googleapis');
 
 exports.helloHttp = (req, res) => {
   ans = "";
-  for (var property in req) {
-    if (req.hasOwnProperty(property)) {
+  for (var property in req.body) {
+    if (req.body.hasOwnProperty(property)) {
         ans += property;
         ans += "\n";
     }
