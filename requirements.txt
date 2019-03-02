@@ -1,2 +1,4 @@
 # Function dependencies, for example:
 # package>=version
+sklearn>=0.0
+nltk>=3.4
