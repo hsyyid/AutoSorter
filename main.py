@@ -12,7 +12,4 @@ def sort(request):
         `make_response <http://flask.pocoo.org/docs/1.0/api/#flask.Flask.make_response>`.
     """
     request_json = request.get_json()
-    if request.args and 'test' in request.args:
-        return make_response(jsonify(message=[1, 2, 3]), 200)
-    else:
-        return make_response(jsonify(labels=Sorting.analyze(request_json['message'], request_json['subjects'])), 200)
+    return make_response(jsonify(labels=Sorting.analyze(request_json['message'], request_json['subjects'])), 200)
