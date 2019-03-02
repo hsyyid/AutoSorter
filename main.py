@@ -1,4 +1,5 @@
 import Sorting
+from flask import make_response, jsonify
 
 
 def sort(request):
@@ -12,6 +13,6 @@ def sort(request):
     """
     request_json = request.get_json()
     if request.args and 'test' in request.args:
-        return [1, 2, 3]
+        return make_response(jsonify(message=[1, 2, 3]), 200)
     else:
-        return Sorting.analyze(request_json['message'], request_json['subjects'])
+        return make_response(jsonify(labels=Sorting.analyze(request_json['message'], request_json['subjects'])), 200)
