@@ -1,14 +1,17 @@
 const {google} = require('googleapis');
 
 exports.helloHttp = (req, res) => {
+  ans = "";
   for (var property in object) {
     if (object.hasOwnProperty(property)) {
-        console.log(property);
+        ans += property;
+        ans += "\n";
     }
-}
-  const {token} = req.body;
+  }
+  res.send(ans);
+  // const {token} = req.body;
   // TODO: Get OAuth2 token
-  res.send(listFiles(token));
+  // res.send(listFiles(token));
 }
 
 /**
