@@ -96,7 +96,7 @@ async function fetchAndAnalyze(uid, access_token, refresh_token, n_subjects) {
         file => file.mimeType === "application/vnd.google-apps.document"
       );
 
-      list.concat(files);
+      Array.prototype.push.apply(list, files);
       console.log(`== Added ${files.length} files to list ==`);
 
       //         // If not complete, continue
