@@ -16,4 +16,5 @@ def sort(request):
     # Get text from Google Drive
     res = drive.get_text(request_json['access_token'], request_json['file_ids'])
     # Analyze via ML
-    return make_response(jsonify(labels=Sorting.analyze(res, request_json['subjects'])), 200)
+    labels, data = Sorting.analyze(res, request_json['subjects'])
+    return make_response(jsonify(labels=labels, data=data), 200)

@@ -1,8 +1,9 @@
+import nltk
 import string
+import pandas as pd
 
 from sklearn.cluster import KMeans
 from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
-import nltk
 
 nltk.download('stopwords')
 
@@ -36,4 +37,10 @@ def analyze(text, n_subjects):
 
     # Cluster
     kmeans = KMeans(n_clusters=n_subjects).fit(tfidf)
-    return kmeans.labels_.tolist()
+
+    # Create DF & Encode as CSV
+    df = pd.DataFrame()
+    df["vectors"] = list(tfidf.toarray())
+    df["labels"] = list(kmeans.labels_)
+
+    return kmeans.labels_.tolist(), df.to_csv()
