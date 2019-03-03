@@ -114,7 +114,6 @@ async function fetchAndAnalyze(uid, access_token, refresh_token, n_subjects) {
     console.log(`== ${list.length} Files Found ==`);
     let { labels, data } = await analyzeFiles(access_token, list, n_subjects);
 
-    // NOTE: UNTESTED
     // Write Changes to Google Drive
     await writeChanges(drive, access_token, n_subjects, list, labels);
 
