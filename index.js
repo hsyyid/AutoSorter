@@ -161,7 +161,7 @@ async function writeChanges(drive, access_token, n_subjects, files, labels) {
     drive.files.create(
       {
         resource: folderMetadata,
-        fields: "id"
+        fields: "fileId"
       },
       function(err, file) {
         if (err) {
@@ -178,5 +178,19 @@ async function writeChanges(drive, access_token, n_subjects, files, labels) {
   await watch.create(folderIds, access_token);
 
   // Place files in folders
-  // TODO: Call the python backend to do this
+  let response = await (await fetch(
+    "***REMOVED***/ml?copy=true",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        file_ids: files.slice(0, 99).map(f => f.id),
+        access_token,
+        folder_ids: folderIds,
+        labels
+      })
+    }
+  )).json();
 }
