@@ -6,6 +6,7 @@ def get_text(access_token, file_ids):
     creds = AccessTokenCredentials(access_token, 'my-user-agent/1.0')
     drive_service = build('drive', 'v3', credentials=creds)
     response = []
+    should_return = False
 
     def callback(request_id, text, exception):
         if exception:
@@ -26,4 +27,8 @@ def get_text(access_token, file_ids):
     pass
 
     batch.execute()
+
+    while len(response) != len(file_ids):
+    pass
+
     return response
