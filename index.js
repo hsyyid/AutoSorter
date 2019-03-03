@@ -85,39 +85,52 @@ async function fetchAndAnalyze(access_token, refresh_token, n_subjects) {
 
   if (list) {
     let { labels } = await analyzeFiles(access_token, list, n_subjects);
+
+    // NOTE: UNTESTED
+    // Write Changes to Google Drive
+    await writeChanges(drive, n_subjects, list, labels);
+
     return { labels, files };
   }
 }
 
-async function writeChanges() {
-  // BEGIN DANGEROUS WRITING CODE
-  // let folderIds = [];
-  // for (let i = 0; i < n_subjects; i++) {
-  //   const folderMetadata = {
-  //     name: i,
-  //     mimeType: "application/vnd.google-apps.folder"
-  //   };
-  //   drive.files.create(
-  //     {
-  //       resource: folderMetadata,
-  //       fields: "id"
-  //     },
-  //     function(err, file) {
-  //       if (err) {
-  //         console.error(error);
-  //       } else {
-  //         console.log(`Creating folder with id ${file.id}`);
-  //         folderIds.push(file.id);
-  //       }
-  //     }
-  //   );
-  // }
-  //
-  // for (let i = 0; i < labels.length; i++) {
-  //   const label = labels[i];
-  //   const file = files[i];
-  //   const copy = drive.files.copy(file.id);
-  //   copy.parents = [folderIds[label]];
-  // }
-  // END DANGEROUS WRITING CODE
+async function writeChanges(drive, n_subjects, files, labels) {
+  let folderIds = [];
+
+  // Create folders for each proposed 'subject'
+  for (let i = 0; i < n_subjects; i++) {
+    const folderMetadata = {
+      name: i,
+      mimeType: "application/vnd.google-apps.folder"
+    };
+
+    drive.files.create(
+      {
+        resource: folderMetadata,
+        fields: "id"
+      },
+      function(err, file) {
+        if (err) {
+          console.error(error);
+        } else {
+          console.log(`Creating folder with id ${file.id}`);
+          folderIds.push(file.id);
+        }
+      }
+    );
+  }
+
+  // Place files in folders
+  for (let i = 0; i < labels.length; i++) {
+    // Get label for this document
+    const label = labels[i];
+    // Get file object
+    const file = files[i];
+    // Create copy of this document
+    // TODO: Probably doesn't just return a 'copy'
+    const copy = drive.files.copy(file.id);
+    // Put copy in corresponding folder
+    // TODO: Does this accomplish that?
+    copy.parents = [folderIds[label]];
+  }
 }
