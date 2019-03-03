@@ -83,11 +83,11 @@ async function fetchAndAnalyze(uid, access_token, refresh_token, n_subjects) {
             const { files, nextPageToken } = res.data;
 
             // Only want text documents in overall list
-            list.push(
-              files.filter(
-                file => file.mimeType === "application/vnd.google-apps.document"
-              )
+            files = files.filter(
+              file => file.mimeType === "application/vnd.google-apps.document"
             );
+
+            list.concat(files);
 
             // If not complete, continue
             if (nextPageToken) pageToken = nextPageToken;
@@ -102,6 +102,7 @@ async function fetchAndAnalyze(uid, access_token, refresh_token, n_subjects) {
   );
 
   if (list) {
+    console.log(`== ${list.length} Files Found ==`);
     let { labels, data } = await analyzeFiles(access_token, list, n_subjects);
 
     // NOTE: UNTESTED
