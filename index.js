@@ -51,7 +51,7 @@ async function fetchAndAnalyze(access_token, refresh_token) {
   let files = await new Promise(resolve => {
     drive.files.list(
       {
-        pageSize: 25,
+        pageSize: 100,
         fields: "nextPageToken, files(id, name, mimeType)"
       },
       (err, res) => {
