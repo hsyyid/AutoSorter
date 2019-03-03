@@ -46,29 +46,48 @@ async function fetchAndAnalyze(access_token, refresh_token, n_subjects) {
   const drive = google.drive({ version: "v3", auth: oauth2Client });
 
   let files = await new Promise(resolve => {
-    drive.files.list(
-      {
-        pageSize: 100,
-        fields: "nextPageToken, files(id, name, mimeType)"
-      },
-      (err, res) => {
-        if (err) console.error(err);
-        const { files } = res.data;
-        resolve(
-          files.filter(
-            file => file.mimeType === "application/vnd.google-apps.document"
-          )
+    list = [];
+    pageToken = undefined;
+    complete = false;
+
+    while (!complete) {
+      // Get list of files
+      await new Promise(done => {
+        drive.files.list(
+          {
+            pageSize: 100,
+            pageToken,
+            fields: "nextPageToken, files(id, name, mimeType)"
+          },
+          (err, res) => {
+            if (err) console.error(err);
+            const { files, nextPageToken } = res.data;
+
+            // Add text documents to overall list
+            list.push(
+              files.filter(
+                file => file.mimeType === "application/vnd.google-apps.document"
+              )
+            );
+
+            // If not complete, continue
+            if (nextPageToken) pageToken = nextPageToken;
+            else complete = false;
+
+            done();
+          }
         );
-      }
-    );
+      });
+    }
+
+    resolve(list);
   });
 
   if (files) {
     let { labels } = await analyzeFiles(access_token, files, n_subjects);
 
-    let folderIds = [];
-
     // BEGIN DANGEROUS WRITING CODE
+    // let folderIds = [];
 
     // for (let i = 0; i < n_subjects; i++) {
     //   const folderMetadata = {
