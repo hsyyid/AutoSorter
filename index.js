@@ -66,49 +66,31 @@ async function fetchAndAnalyze(uid, access_token, refresh_token, n_subjects) {
   let pageToken = undefined;
   let complete = false;
 
-  // Gets full list of all doc files
-  // await whilst(
-  //   () => !complete,
-  //   async callback => {
   // Get page of 100 files
   await new Promise(done => {
-    let params = pageToken
-      ? {
-          pageSize: 100,
-          pageToken,
-          fields: "nextPageToken, files(id, name, mimeType)"
-        }
-      : {
-          pageSize: 100,
-          fields: "nextPageToken, files(id, name, mimeType)"
-        };
+    drive.files.list(
+      {
+        pageSize: 100,
+        fields: "nextPageToken, files(id, name, mimeType)"
+      },
+      (err, res) => {
+        if (err) console.error(err);
+        else console.error(res);
 
-    console.log(`== Requesting Page: ${JSON.stringify(params, null, 2)}==`);
+        let { files, nextPageToken } = res.data;
 
-    drive.files.list(params, (err, res) => {
-      if (err) console.error(err);
-      else console.error(res);
+        // Only want text documents in overall list
+        files = files.filter(
+          file => file.mimeType === "application/vnd.google-apps.document"
+        );
 
-      let { files, nextPageToken } = res.data;
+        Array.prototype.push.apply(list, files);
+        console.log(`== Added ${files.length} files to list ==`);
 
-      // Only want text documents in overall list
-      files = files.filter(
-        file => file.mimeType === "application/vnd.google-apps.document"
-      );
-
-      Array.prototype.push.apply(list, files);
-      console.log(`== Added ${files.length} files to list ==`);
-
-      //         // If not complete, continue
-      //         if (nextPageToken) pageToken = nextPageToken;
-      //         else complete = true;
-      //
-      //         // Finished this iteration
-      done();
-    });
+        done();
+      }
+    );
   });
-  // }
-  // );
 
   if (list) {
     console.log(`== ${list.length} Files Found ==`);
