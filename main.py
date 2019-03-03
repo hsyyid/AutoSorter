@@ -15,7 +15,12 @@ def sort(request):
     request_json = request.get_json()
 
     if request.args and 'text' in request.args:
-        print("Here and {}".format(len(drive.get_text(request_json['access_token'], request_json['file_ids']))))
-        return make_response(jsonify(text=[1, 2]), 200)
+        res = drive.get_text(request_json['access_token'], request_json['file_ids'])
+        print("Here and {}".format(len(res)))
+
+        if len(res) > 0:
+            return make_response(jsonify(text=res), 200)
+        else:
+            return make_response(jsonify(error="Failed."), 500)
     else:
         return make_response(jsonify(labels=Sorting.analyze(request_json['message'], request_json['subjects'])), 200)
