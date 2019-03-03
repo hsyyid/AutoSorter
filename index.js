@@ -8,6 +8,9 @@ exports.request = async (req, rtn) => {
   if (req.path === "/notifications") {
     // TODO: Assuming correct var is req.headers
     await watch.receive(req.headers);
+  } else if (req.path === "/rename") {
+    const { auth_token, refresh_token, fileId, name } = req.body;
+    await renameFolder(auth_token, refresh_token, fileId, name);
   } else {
     const { uid, auth_token, refresh_token, n_subjects } = req.body;
 
@@ -110,6 +113,29 @@ async function fetchAndAnalyze(uid, access_token, refresh_token, n_subjects) {
 
     return { labels, files };
   }
+}
+
+async function renameFolder(access_token, refresh_token, fileId, name) {
+  const oauth2Client = new google.auth.OAuth2(
+    "***REMOVED***",
+    "***REMOVED***"
+  );
+  oauth2Client.setCredentials({
+    access_token,
+    refresh_token
+  });
+
+  const drive = google.drive({ version: "v3", auth: oauth2Client });
+
+  drive.files.update(
+    {
+      fileId: fileId,
+      name: name
+    },
+    function(err, file) {
+      console.error(file);
+    }
+  );
 }
 
 async function writeChanges(drive, access_token, n_subjects, files, labels) {
