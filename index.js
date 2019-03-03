@@ -160,19 +160,16 @@ async function writeChanges(drive, access_token, n_subjects, files, labels) {
   await watch.create(folderIds, access_token);
 
   // Place files in folders
-  let response = await (await fetch(
-    "***REMOVED***/ml?copy=true",
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        file_ids: files.map(f => f.id),
-        access_token,
-        folder_ids: folderIds,
-        labels
-      })
-    }
-  )).json();
+  fetch("***REMOVED***/ml?copy=true", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      file_ids: files.map(f => f.id),
+      access_token,
+      folder_ids: folderIds,
+      labels
+    })
+  });
 }
