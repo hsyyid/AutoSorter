@@ -168,7 +168,7 @@ async function writeChanges(drive, access_token, n_subjects, files, labels) {
           console.error(err);
         } else {
           console.error(res.data);
-          folderIds.push(res.data.file.id);
+          folderIds.push(res.data.id);
         }
       }
     );
