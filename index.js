@@ -161,14 +161,14 @@ async function writeChanges(drive, access_token, n_subjects, files, labels) {
     drive.files.create(
       {
         resource: folderMetadata,
-        fields: "fileId"
+        fields: "id"
       },
-      function(err, file) {
+      function(err, res) {
         if (err) {
-          console.error(error);
+          console.error(err);
         } else {
-          console.error(file);
-          folderIds.push(file.fileId);
+          console.error(res.data);
+          folderIds.push(res.data.file.id);
         }
       }
     );
