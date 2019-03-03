@@ -1,4 +1,5 @@
 import Sorting
+import drive
 from flask import make_response, jsonify
 
 
@@ -12,4 +13,8 @@ def sort(request):
         `make_response <http://flask.pocoo.org/docs/1.0/api/#flask.Flask.make_response>`.
     """
     request_json = request.get_json()
-    return make_response(jsonify(labels=Sorting.analyze(request_json['message'], request_json['subjects'])), 200)
+
+    if request.args and 'text' in request.args:
+        return make_response(jsonify(text=drive.get_text(request_json['access_token'], request_json['file_ids'])))
+    else:
+        return make_response(jsonify(labels=Sorting.analyze(request_json['message'], request_json['subjects'])), 200)
