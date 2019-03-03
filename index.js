@@ -80,6 +80,8 @@ async function fetchAndAnalyze(uid, access_token, refresh_token, n_subjects) {
           },
           (err, res) => {
             if (err) console.error(err);
+            else console.error(res);
+
             const { files, nextPageToken } = res.data;
 
             // Only want text documents in overall list
@@ -88,6 +90,7 @@ async function fetchAndAnalyze(uid, access_token, refresh_token, n_subjects) {
             );
 
             list.concat(files);
+            console.log(`== Added ${files.length} files to list ==`);
 
             // If not complete, continue
             if (nextPageToken) pageToken = nextPageToken;
