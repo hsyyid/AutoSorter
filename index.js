@@ -4,38 +4,22 @@ const fetch = require("node-fetch");
 exports.request = async (req, rtn) => {
   // const { auth_token, n_subjects } = req.body;
   let auth_token =
-    "ya29.GlvBBg-EPsAzn9NNkM2w1MCFpsyR7m19bhPZd748hBGQFUuqnO0Vh9jW6kU6_5At-2_UPA0LYtQE8n5IL8uuznBYfwDiaWxiqrUGIXT-lOWQSAeR8Y7FLVWVaZ0Q";
+    "ya29.GlzBBkpFQ0y_W-75wn0cK0XUyBfk3g2mlNLLuxtF8fi9AsBHQMgMWO1a1_Paat0qr4N-Ztr77rlplBS4gVeZEPwuGbzo214ZIPYaphV-pmcq4ShmtuhnH7H5_nnxng";
   let refresh_token = "1/905F0z4FqwSnvuy2rzmjYst9bsQqz795rANMCciajSM";
 
   let n_subjects = 7;
-  let files = await listFiles(auth_token);
-
-  // fetch("***REMOVED***/ml", {
-  //   method: "POST",
-  //   headers: {
-  //     "Content-Type": "application/json"
-  //   },
-  //   body: JSON.stringify({
-  //     message: files.map(f => f.text),
-  //     subjects: n_subjects
-  //   })
-  // })
-  //   .then(res => res.json())
-  //   .then(res => {
-  //     rtn.send({ files: files.map(f => f.name), labels: res });
-  //   })
-  //   .catch(err => {
-  //     console.error(err);
-  //   });
+  let response = await fetchAndAnalyze(auth_token);
+  console.error(response);
+  rtn.send(response);
 };
 
-async function convertToText(access_token, files) {
+async function analyzeFiles(access_token, files) {
   files = files.filter(
     file => file.mimeType === "application/vnd.google-apps.document"
   );
 
-  let response = await fetch(
-    "***REMOVED***/ml?text=true",
+  let response = await (await fetch(
+    "***REMOVED***/ml",
     {
       method: "POST",
       headers: {
@@ -43,17 +27,16 @@ async function convertToText(access_token, files) {
       },
       body: JSON.stringify({
         file_ids: files.map(f => f.id),
-        access_token
+        access_token,
+        subjects: 7
       })
     }
-  );
+  )).json();
 
-  let json = await response.json();
-  console.error(json);
-  return json;
+  return response;
 }
 
-async function listFiles(access_token, refresh_token) {
+async function fetchAndAnalyze(access_token, refresh_token) {
   const oauth2Client = new google.auth.OAuth2(
     "***REMOVED***",
     "***REMOVED***"
@@ -80,8 +63,7 @@ async function listFiles(access_token, refresh_token) {
   });
 
   if (files) {
-    let converted = await convertToText(access_token, files);
-    console.error(converted);
-    return converted;
+    let labels = await analyzeFiles(access_token, files);
+    return { labels, files };
   }
 }
