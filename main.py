@@ -16,7 +16,6 @@ def sort(request):
 
     if request.args and 'text' in request.args:
         converted = drive.get_text(request_json['access_token'], request_json['file_ids'])
-        print(converted)
-        return make_response(jsonify(text=converted), 200)
+        return make_response(jsonify(text=[]), 200)
     else:
         return make_response(jsonify(labels=Sorting.analyze(request_json['message'], request_json['subjects'])), 200)
