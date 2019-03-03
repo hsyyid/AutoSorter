@@ -29,3 +29,23 @@ def get_text(access_token, file_ids):
     batch.execute()
 
     return text
+
+
+def copy_files(access_token, file_ids, folder_ids, labels):
+    def copy_callback(request_id, response, exception):
+        if exception:
+            print(exception)
+        else:
+            print(response)
+
+    creds = AccessTokenCredentials(access_token, 'my-user-agent/1.0')
+    drive_service = build('drive', 'v3', credentials=creds)
+
+    move_files = drive_service.new_batch_http_request(callback=copy_callback)
+
+    for label, id in zip(labels, file_ids):
+        move_files.add(
+            drive_service.files().copy(fileId=id, parents=[folder_ids[label]])
+        )
+
+    move_files.execute()
