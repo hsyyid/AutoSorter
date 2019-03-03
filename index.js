@@ -70,7 +70,7 @@ async function fetchAndAnalyze(access_token, refresh_token, n_subjects) {
 
     // BEGIN DANGEROUS WRITING CODE
 
-    for (let i=0;i<subjects;i++) {
+    for (let i=0;i<n_subjects;i++) {
       const folderMetadata = {
         'name': i,
         'mimeType': 'application/vnd.google-apps.folder'
