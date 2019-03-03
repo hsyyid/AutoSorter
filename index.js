@@ -1,20 +1,34 @@
 const { google } = require("googleapis");
 const fetch = require("node-fetch");
+const watch = require("./watch.js");
+const storage = require("./storage.js");
 
 exports.request = async (req, rtn) => {
-  const { auth_token, refresh_token, n_subjects } = req.body;
+  // TODO: Testing
+  if (req.path === "/notifications") {
+    // TODO: Assuming correct var is req.headers
+    await watch.receive(req.headers);
+  } else {
+    const { uid, auth_token, refresh_token, n_subjects } = req.body;
 
-  let response = await fetchAndAnalyze(
-    auth_token,
-    refresh_token,
-    parseInt(n_subjects)
-  );
+    let response = await fetchAndAnalyze(
+      uid,
+      auth_token,
+      refresh_token,
+      parseInt(n_subjects)
+    );
 
-  console.error(response);
-  rtn.send(response);
+    console.error(response);
+    rtn.send(response);
+  }
 };
 
 async function analyzeFiles(access_token, files, subjects) {
+  // TODO: Batch request only takes 100 requests, and we are limited to 10
+  // requests per second per user, we will need to split this into a maximum of
+  // 10 requests (1,000 files). Else we will need to wait for a second or two
+  // before requesting more to avoid rate limiting.
+  // TODO: Do batch requests completely fix problem with rate limiting?
   let response = await (await fetch(
     "***REMOVED***/ml",
     {
@@ -23,7 +37,7 @@ async function analyzeFiles(access_token, files, subjects) {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        file_ids: files.map(f => f.id),
+        file_ids: files.slice(0, 99).map(f => f.id),
         access_token,
         subjects
       })
@@ -33,7 +47,7 @@ async function analyzeFiles(access_token, files, subjects) {
   return response;
 }
 
-async function fetchAndAnalyze(access_token, refresh_token, n_subjects) {
+async function fetchAndAnalyze(uid, access_token, refresh_token, n_subjects) {
   const oauth2Client = new google.auth.OAuth2(
     "***REMOVED***",
     "***REMOVED***"
@@ -84,17 +98,21 @@ async function fetchAndAnalyze(access_token, refresh_token, n_subjects) {
   );
 
   if (list) {
-    let { labels } = await analyzeFiles(access_token, list, n_subjects);
+    let { labels, data } = await analyzeFiles(access_token, list, n_subjects);
 
     // NOTE: UNTESTED
     // Write Changes to Google Drive
-    await writeChanges(drive, n_subjects, list, labels);
+    await writeChanges(drive, access_token, n_subjects, list, labels);
+
+    // NOTE: UNTESTED
+    // Mirror current state in Cloud Storage
+    await storage.SaveDocuments(uid, data, labels);
 
     return { labels, files };
   }
 }
 
-async function writeChanges(drive, n_subjects, files, labels) {
+async function writeChanges(drive, access_token, n_subjects, files, labels) {
   let folderIds = [];
 
   // Create folders for each proposed 'subject'
@@ -119,6 +137,9 @@ async function writeChanges(drive, n_subjects, files, labels) {
       }
     );
   }
+
+  // Creates notification channel for folders
+  await watch.create(folderIds, access_token);
 
   // Place files in folders
   for (let i = 0; i < labels.length; i++) {
