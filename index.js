@@ -89,7 +89,7 @@ async function fetchAndAnalyze(uid, access_token, refresh_token, n_subjects) {
           if (err) console.error(err);
           else console.error(res);
 
-          const { files, nextPageToken } = res.data;
+          let { files, nextPageToken } = res.data;
 
           // Only want text documents in overall list
           files = files.filter(
