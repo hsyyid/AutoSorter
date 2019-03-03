@@ -65,6 +65,38 @@ async function fetchAndAnalyze(access_token, refresh_token, n_subjects) {
 
   if (files) {
     let { labels } = await analyzeFiles(access_token, files, n_subjects);
+
+    let folderIds = [];
+
+    // BEGIN DANGEROUS WRITING CODE
+
+    for (let i=0;i<subjects;i++) {
+      const folderMetadata = {
+        'name': i,
+        'mimeType': 'application/vnd.google-apps.folder'
+      };
+      drive.files.create({
+        resource:folderMetadata,
+        fields: 'id'
+      }, function(err, file) {
+        if (err) {
+          console.error(error);
+        } else {
+          console.log(`Creating folder with id ${file.id}`);
+          folderIds.push(file.id);
+        }
+      });
+    }
+
+    for (let i=0;i<labels.length;i++) {
+      const label = labels[i];
+      const file = files[i];
+      const copy = drive.files.copy(file.id);
+      copy.parents = [folderIds[label]];
+    }
+
+    // END DANGEROUS WRITING CODE
+
     return { labels, files };
   }
 }
