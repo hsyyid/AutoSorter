@@ -2,7 +2,7 @@ const { google } = require("googleapis");
 const fetch = require("node-fetch");
 const watch = require("./watch.js");
 const storage = require("./storage.js");
-import whilst from "async/whilst";
+const whilst = "async/whilst";
 
 exports.request = async (req, rtn) => {
   // TODO: Testing
