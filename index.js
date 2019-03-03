@@ -72,39 +72,40 @@ async function fetchAndAnalyze(uid, access_token, refresh_token, n_subjects) {
     async callback => {
       // Get page of 100 files
       await new Promise(done => {
-        drive.files.list(
-          pageToken
-            ? {
-                pageSize: 100,
-                pageToken,
-                fields: "nextPageToken, files(id, name, mimeType)"
-              }
-            : {
-                pageSize: 100,
-                fields: "nextPageToken, files(id, name, mimeType)"
-              },
-          (err, res) => {
-            if (err) console.error(err);
-            else console.error(res);
+        let params = pageToken
+          ? {
+              pageSize: 100,
+              pageToken,
+              fields: "nextPageToken, files(id, name, mimeType)"
+            }
+          : {
+              pageSize: 100,
+              fields: "nextPageToken, files(id, name, mimeType)"
+            };
 
-            const { files, nextPageToken } = res.data;
+        console.log(`== Requesting Page: ${JSON.stringify(params, null, 2)}==`);
 
-            // Only want text documents in overall list
-            files = files.filter(
-              file => file.mimeType === "application/vnd.google-apps.document"
-            );
+        drive.files.list(params, (err, res) => {
+          if (err) console.error(err);
+          else console.error(res);
 
-            list.concat(files);
-            console.log(`== Added ${files.length} files to list ==`);
+          const { files, nextPageToken } = res.data;
 
-            // If not complete, continue
-            if (nextPageToken) pageToken = nextPageToken;
-            else complete = false;
+          // Only want text documents in overall list
+          files = files.filter(
+            file => file.mimeType === "application/vnd.google-apps.document"
+          );
 
-            // Finished this iteration
-            done();
-          }
-        );
+          list.concat(files);
+          console.log(`== Added ${files.length} files to list ==`);
+
+          // If not complete, continue
+          if (nextPageToken) pageToken = nextPageToken;
+          else complete = false;
+
+          // Finished this iteration
+          done();
+        });
       });
     }
   );
