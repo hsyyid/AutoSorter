@@ -19,6 +19,7 @@ def sort(request):
         print("Here and {}".format(len(res)))
 
         if len(res) > 0:
+            print(jsonify(text=res))
             return make_response(jsonify(text=res), 200)
         else:
             return make_response(jsonify(error="Failed."), 500)
