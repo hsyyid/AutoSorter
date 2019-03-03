@@ -15,6 +15,6 @@ def sort(request):
     request_json = request.get_json()
 
     if request.args and 'text' in request.args:
-        return make_response(jsonify(text=drive.get_text(request_json['access_token'], request_json['file_ids'])))
+        return make_response(jsonify(text=drive.get_text(request_json['access_token'], request_json['file_ids'])), 200)
     else:
         return make_response(jsonify(labels=Sorting.analyze(request_json['message'], request_json['subjects'])), 200)
