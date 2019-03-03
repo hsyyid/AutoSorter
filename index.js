@@ -10,11 +10,14 @@ exports.request = (req, res) => {
     headers: {
       "Content-Type": "application/json"
     },
-    body: JSON.stringify({ message: files, subjects: n_subjects })
+    body: JSON.stringify({
+      message: files.map(f => f.text),
+      subjects: n_subjects
+    })
   })
     .then(res => res.json())
     .then(res => {
-      res.send({ files, labels: res });
+      res.send({ files: files.map(f => f.name), labels: res });
     })
     .catch(err => {
       console.error(err);
