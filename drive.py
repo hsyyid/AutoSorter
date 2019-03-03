@@ -3,9 +3,8 @@ from oauth2client.client import AccessTokenCredentials
 
 
 def get_text(access_token, file_ids):
-    # text = []
+    text = []
 
-    # try:
     creds = AccessTokenCredentials(access_token, 'my-user-agent/1.0')
     drive_service = build('drive', 'v3', credentials=creds)
 
@@ -15,10 +14,7 @@ def get_text(access_token, file_ids):
             print(exception)
         else:
             print(response)
-            # text.append(response)
-            #
-            # if len(text) == len(file_ids):
-            #     raise Exception('test')
+            text.append(response)
 
     batch = drive_service.new_batch_http_request(callback=callback)
 
@@ -31,10 +27,5 @@ def get_text(access_token, file_ids):
     pass
 
     batch.execute()
-# except:
-#     return text
 
-# while len(response) != len(file_ids):
-#     print(len(response))
-#
-# return response
+    return text
