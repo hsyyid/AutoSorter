@@ -2,18 +2,13 @@ const { google } = require("googleapis");
 const fetch = require("node-fetch");
 
 exports.request = async (req, rtn) => {
-  // const { auth_token, n_subjects } = req.body;
-  let auth_token =
-    "ya29.GlzBBkpFQ0y_W-75wn0cK0XUyBfk3g2mlNLLuxtF8fi9AsBHQMgMWO1a1_Paat0qr4N-Ztr77rlplBS4gVeZEPwuGbzo214ZIPYaphV-pmcq4ShmtuhnH7H5_nnxng";
-  let refresh_token = "1/905F0z4FqwSnvuy2rzmjYst9bsQqz795rANMCciajSM";
-
-  let n_subjects = 7;
-  let response = await fetchAndAnalyze(auth_token);
+  const { auth_token, refresh_token, n_subjects } = req.body;
+  let response = await fetchAndAnalyze(auth_token, refresh_token, n_subjects);
   console.error(response);
   rtn.send(response);
 };
 
-async function analyzeFiles(access_token, files) {
+async function analyzeFiles(access_token, files, subjects) {
   files = files.filter(
     file => file.mimeType === "application/vnd.google-apps.document"
   );
@@ -28,7 +23,7 @@ async function analyzeFiles(access_token, files) {
       body: JSON.stringify({
         file_ids: files.map(f => f.id),
         access_token,
-        subjects: 7
+        subjects
       })
     }
   )).json();
@@ -36,7 +31,7 @@ async function analyzeFiles(access_token, files) {
   return response;
 }
 
-async function fetchAndAnalyze(access_token, refresh_token) {
+async function fetchAndAnalyze(access_token, refresh_token, n_subjects) {
   const oauth2Client = new google.auth.OAuth2(
     "219711634489-fbdu21o00er8rm2sjomr29eannn3tmdo.apps.googleusercontent.com",
     "pURYu1O2cbbVPKu5BH-lkbLU"
@@ -63,7 +58,7 @@ async function fetchAndAnalyze(access_token, refresh_token) {
   });
 
   if (files) {
-    let labels = await analyzeFiles(access_token, files);
+    let labels = await analyzeFiles(access_token, files, n_subjects);
     return { labels, files };
   }
 }
