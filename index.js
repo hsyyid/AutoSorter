@@ -73,11 +73,16 @@ async function fetchAndAnalyze(uid, access_token, refresh_token, n_subjects) {
       // Get page of 100 files
       await new Promise(done => {
         drive.files.list(
-          {
-            pageSize: 100,
-            pageToken,
-            fields: "nextPageToken, files(id, name, mimeType)"
-          },
+          pageToken
+            ? {
+                pageSize: 100,
+                pageToken,
+                fields: "nextPageToken, files(id, name, mimeType)"
+              }
+            : {
+                pageSize: 100,
+                fields: "nextPageToken, files(id, name, mimeType)"
+              },
           (err, res) => {
             if (err) console.error(err);
             else console.error(res);
