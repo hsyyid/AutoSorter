@@ -44,85 +44,80 @@ async function fetchAndAnalyze(access_token, refresh_token, n_subjects) {
   });
 
   const drive = google.drive({ version: "v3", auth: oauth2Client });
+  let list = [];
+  let pageToken = undefined;
+  let complete = false;
 
-  let files = await new Promise(resolve => {
-    list = [];
-    pageToken = undefined;
-    complete = false;
+  // Gets full list of all doc files
+  await async.whilst(
+    () => !complete,
+    async callback => {
+      // Get page of 100 files
+      await new Promise(done => {
+        drive.files.list(
+          {
+            pageSize: 100,
+            pageToken,
+            fields: "nextPageToken, files(id, name, mimeType)"
+          },
+          (err, res) => {
+            if (err) console.error(err);
+            const { files, nextPageToken } = res.data;
 
-    await async.whilst(
-      () => !complete,
-      async callback => {
-        // Get list of files
-        await new Promise(done => {
-          drive.files.list(
-            {
-              pageSize: 100,
-              pageToken,
-              fields: "nextPageToken, files(id, name, mimeType)"
-            },
-            (err, res) => {
-              if (err) console.error(err);
-              const { files, nextPageToken } = res.data;
+            // Only want text documents in overall list
+            list.push(
+              files.filter(
+                file => file.mimeType === "application/vnd.google-apps.document"
+              )
+            );
 
-              // Add text documents to overall list
-              list.push(
-                files.filter(
-                  file =>
-                    file.mimeType === "application/vnd.google-apps.document"
-                )
-              );
+            // If not complete, continue
+            if (nextPageToken) pageToken = nextPageToken;
+            else complete = false;
 
-              // If not complete, continue
-              if (nextPageToken) pageToken = nextPageToken;
-              else complete = false;
+            // Finished this iteration
+            done();
+          }
+        );
+      });
+    }
+  );
 
-              done();
-            }
-          );
-        });
-      }
-    );
-
-    resolve(list);
-  });
-
-  if (files) {
-    let { labels } = await analyzeFiles(access_token, files, n_subjects);
-
-    // BEGIN DANGEROUS WRITING CODE
-    // let folderIds = [];
-
-    // for (let i = 0; i < n_subjects; i++) {
-    //   const folderMetadata = {
-    //     name: i,
-    //     mimeType: "application/vnd.google-apps.folder"
-    //   };
-    //   drive.files.create(
-    //     {
-    //       resource: folderMetadata,
-    //       fields: "id"
-    //     },
-    //     function(err, file) {
-    //       if (err) {
-    //         console.error(error);
-    //       } else {
-    //         console.log(`Creating folder with id ${file.id}`);
-    //         folderIds.push(file.id);
-    //       }
-    //     }
-    //   );
-    // }
-    //
-    // for (let i = 0; i < labels.length; i++) {
-    //   const label = labels[i];
-    //   const file = files[i];
-    //   const copy = drive.files.copy(file.id);
-    //   copy.parents = [folderIds[label]];
-    // }
-
-    // END DANGEROUS WRITING CODE
-
+  if (list) {
+    let { labels } = await analyzeFiles(access_token, list, n_subjects);
     return { labels, files };
   }
+}
+
+async function writeChanges() {
+  // BEGIN DANGEROUS WRITING CODE
+  // let folderIds = [];
+  // for (let i = 0; i < n_subjects; i++) {
+  //   const folderMetadata = {
+  //     name: i,
+  //     mimeType: "application/vnd.google-apps.folder"
+  //   };
+  //   drive.files.create(
+  //     {
+  //       resource: folderMetadata,
+  //       fields: "id"
+  //     },
+  //     function(err, file) {
+  //       if (err) {
+  //         console.error(error);
+  //       } else {
+  //         console.log(`Creating folder with id ${file.id}`);
+  //         folderIds.push(file.id);
+  //       }
+  //     }
+  //   );
+  // }
+  //
+  // for (let i = 0; i < labels.length; i++) {
+  //   const label = labels[i];
+  //   const file = files[i];
+  //   const copy = drive.files.copy(file.id);
+  //   copy.parents = [folderIds[label]];
+  // }
+  // END DANGEROUS WRITING CODE
 }
