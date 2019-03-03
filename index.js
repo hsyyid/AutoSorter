@@ -178,16 +178,5 @@ async function writeChanges(drive, access_token, n_subjects, files, labels) {
   await watch.create(folderIds, access_token);
 
   // Place files in folders
-  // for (let i = 0; i < labels.length; i++) {
-  //   // Get label for this document
-  //   const label = labels[i];
-  //   // Get file object
-  //   const file = files[i];
-  //   // Create copy of this document
-  //   // TODO: Probably doesn't just return a 'copy'
-  //   const copy = drive.files.copy(file.id);
-  //   // Put copy in corresponding folder
-  //   // TODO: Does this accomplish that?
-  //   copy.parents = [folderIds[label]];
-  // }
+  // TODO: Call the python backend to do this
 }
