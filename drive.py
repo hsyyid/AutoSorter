@@ -3,7 +3,7 @@ from oauth2client.client import AccessTokenCredentials
 
 
 def get_text(access_token, file_ids):
-    creds = AccessTokenCredentials(access_token)
+    creds = AccessTokenCredentials(access_token, 'my-user-agent/1.0')
     drive_service = build('drive', 'v3', credentials=creds)
 
     def callback(request_id, response, exception):
