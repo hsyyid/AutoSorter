@@ -15,10 +15,6 @@ exports.request = async (req, rtn) => {
 };
 
 async function analyzeFiles(access_token, files, subjects) {
-  files = files.filter(
-    file => file.mimeType === "application/vnd.google-apps.document"
-  );
-
   let response = await (await fetch(
     "***REMOVED***/ml",
     {
@@ -58,7 +54,11 @@ async function fetchAndAnalyze(access_token, refresh_token, n_subjects) {
       (err, res) => {
         if (err) console.error(err);
         const { files } = res.data;
-        resolve(files);
+        resolve(
+          files.filter(
+            file => file.mimeType === "application/vnd.google-apps.document"
+          )
+        );
       }
     );
   });
@@ -70,25 +70,28 @@ async function fetchAndAnalyze(access_token, refresh_token, n_subjects) {
 
     // BEGIN DANGEROUS WRITING CODE
 
-    for (let i=0;i<n_subjects;i++) {
+    for (let i = 0; i < n_subjects; i++) {
       const folderMetadata = {
-        'name': i,
-        'mimeType': 'application/vnd.google-apps.folder'
+        name: i,
+        mimeType: "application/vnd.google-apps.folder"
       };
-      drive.files.create({
-        resource:folderMetadata,
-        fields: 'id'
-      }, function(err, file) {
-        if (err) {
-          console.error(error);
-        } else {
-          console.log(`Creating folder with id ${file.id}`);
-          folderIds.push(file.id);
+      drive.files.create(
+        {
+          resource: folderMetadata,
+          fields: "id"
+        },
+        function(err, file) {
+          if (err) {
+            console.error(error);
+          } else {
+            console.log(`Creating folder with id ${file.id}`);
+            folderIds.push(file.id);
+          }
         }
-      });
+      );
     }
 
-    for (let i=0;i<labels.length;i++) {
+    for (let i = 0; i < labels.length; i++) {
       const label = labels[i];
       const file = files[i];
       const copy = drive.files.copy(file.id);
