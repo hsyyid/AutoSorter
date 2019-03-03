@@ -5,14 +5,14 @@ from oauth2client.client import AccessTokenCredentials
 def get_text(access_token, file_ids):
     creds = AccessTokenCredentials(access_token, 'my-user-agent/1.0')
     drive_service = build('drive', 'v3', credentials=creds)
+    response = []
 
-    def callback(request_id, response, exception):
+    def callback(request_id, text, exception):
         if exception:
             # Handle error
             print(exception)
         else:
-            print("CALLED")
-            # print(response)
+            response.append(text)
 
     batch = drive_service.new_batch_http_request(callback=callback)
 
@@ -25,3 +25,4 @@ def get_text(access_token, file_ids):
     pass
 
     batch.execute()
+    return response
