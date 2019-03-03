@@ -3,7 +3,13 @@ const fetch = require("node-fetch");
 
 exports.request = async (req, rtn) => {
   const { auth_token, refresh_token, n_subjects } = req.body;
-  let response = await fetchAndAnalyze(auth_token, refresh_token, n_subjects);
+
+  let response = await fetchAndAnalyze(
+    auth_token,
+    refresh_token,
+    parseInt(n_subjects)
+  );
+
   console.error(response);
   rtn.send(response);
 };
