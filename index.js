@@ -1,9 +1,24 @@
 const { google } = require("googleapis");
+const fetch = require("node-fetch");
 
 exports.request = (req, res) => {
-  const { auth_token } = req.body;
+  const { auth_token, n_subjects } = req.body;
   let files = listFiles(auth_token);
-  res.send(files);
+
+  fetch("https://us-central1-hoohacks-cc16b.cloudfunctions.net/ml", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ message: files, subjects: n_subjects })
+  })
+    .then(res => res.json())
+    .then(res => {
+      res.send({ files, labels: res });
+    })
+    .catch(err => {
+      console.error(err);
+    });
 };
 
 function listFiles(auth) {
