@@ -64,7 +64,7 @@ async function fetchAndAnalyze(access_token, refresh_token, n_subjects) {
   });
 
   if (files) {
-    let labels = await analyzeFiles(access_token, files, n_subjects);
+    let { labels } = await analyzeFiles(access_token, files, n_subjects);
     return { labels, files };
   }
 }
