@@ -45,7 +45,7 @@ def copy_files(access_token, file_ids, folder_ids, labels):
 
     for label, id in zip(labels, file_ids):
         move_files.add(
-            drive_service.files().copy(fileId=id, parents=[folder_ids[label]])
+            drive_service.files().copy(fileId=id, body={"parents": [folder_ids[label]]})
         )
 
     move_files.execute()
