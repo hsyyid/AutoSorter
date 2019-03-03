@@ -28,7 +28,7 @@ def get_text(access_token, file_ids):
 
     batch.execute()
 
-    while len(response) != len(file_ids):
-        print(".")
-
-    return response
+    # while len(response) != len(file_ids):
+    #     print(len(response))
+    #
+    # return response
