@@ -14,7 +14,7 @@ def get_text(access_token, file_ids):
             print(exception)
         else:
             print(response)
-            text.append(response)
+            text.append(response.decode('utf-8'))
 
     batch = drive_service.new_batch_http_request(callback=callback)
 
