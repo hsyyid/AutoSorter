@@ -2,3 +2,4 @@
 # package>=version
 sklearn>=0.0
 nltk>=3.4
+oauth2client>=0.0
