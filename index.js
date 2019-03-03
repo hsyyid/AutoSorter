@@ -121,7 +121,7 @@ async function fetchAndAnalyze(uid, access_token, refresh_token, n_subjects) {
     // Mirror current state in Cloud Storage
     await storage.SaveDocuments(uid, data, labels);
 
-    return { labels, files };
+    return { labels, files: list };
   }
 }
 
@@ -167,7 +167,7 @@ async function writeChanges(drive, access_token, n_subjects, files, labels) {
         if (err) {
           console.error(error);
         } else {
-          console.log(`Creating folder with id ${file.fileId}`);
+          console.error(file);
           folderIds.push(file.fileId);
         }
       }
