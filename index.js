@@ -41,7 +41,7 @@ async function analyzeFiles(access_token, files, subjects) {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        file_ids: files.slice(0, 99).map(f => f.id),
+        file_ids: files.map(f => f.id),
         access_token,
         subjects
       })
@@ -70,7 +70,7 @@ async function fetchAndAnalyze(uid, access_token, refresh_token, n_subjects) {
   await new Promise(done => {
     drive.files.list(
       {
-        pageSize: 100,
+        pageSize: 50,
         fields: "nextPageToken, files(id, name, mimeType)"
       },
       (err, res) => {
@@ -168,7 +168,7 @@ async function writeChanges(drive, access_token, n_subjects, files, labels) {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        file_ids: files.slice(0, 99).map(f => f.id),
+        file_ids: files.map(f => f.id),
         access_token,
         folder_ids: folderIds,
         labels
