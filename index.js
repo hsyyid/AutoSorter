@@ -50,35 +50,39 @@ async function fetchAndAnalyze(access_token, refresh_token, n_subjects) {
     pageToken = undefined;
     complete = false;
 
-    while (!complete) {
-      // Get list of files
-      await new Promise(done => {
-        drive.files.list(
-          {
-            pageSize: 100,
-            pageToken,
-            fields: "nextPageToken, files(id, name, mimeType)"
-          },
-          (err, res) => {
-            if (err) console.error(err);
-            const { files, nextPageToken } = res.data;
+    await async.whilst(
+      () => !complete,
+      async callback => {
+        // Get list of files
+        await new Promise(done => {
+          drive.files.list(
+            {
+              pageSize: 100,
+              pageToken,
+              fields: "nextPageToken, files(id, name, mimeType)"
+            },
+            (err, res) => {
+              if (err) console.error(err);
+              const { files, nextPageToken } = res.data;
 
-            // Add text documents to overall list
-            list.push(
-              files.filter(
-                file => file.mimeType === "application/vnd.google-apps.document"
-              )
-            );
+              // Add text documents to overall list
+              list.push(
+                files.filter(
+                  file =>
+                    file.mimeType === "application/vnd.google-apps.document"
+                )
+              );
 
-            // If not complete, continue
-            if (nextPageToken) pageToken = nextPageToken;
-            else complete = false;
+              // If not complete, continue
+              if (nextPageToken) pageToken = nextPageToken;
+              else complete = false;
 
-            done();
-          }
-        );
-      });
-    }
+              done();
+            }
+          );
+        });
+      }
+    );
 
     resolve(list);
   });
