@@ -36,4 +36,4 @@ def analyze(text, n_subjects):
 
     # Cluster
     kmeans = KMeans(n_clusters=n_subjects).fit(tfidf)
-    return kmeans.labels_.ravel()
+    return kmeans.labels_.tolist()
