@@ -2,6 +2,7 @@ const { google } = require("googleapis");
 const fetch = require("node-fetch");
 const watch = require("./watch.js");
 const storage = require("./storage.js");
+import whilst from "async/whilst";
 
 exports.request = async (req, rtn) => {
   // TODO: Testing
@@ -66,7 +67,7 @@ async function fetchAndAnalyze(uid, access_token, refresh_token, n_subjects) {
   let complete = false;
 
   // Gets full list of all doc files
-  await async.whilst(
+  await whilst(
     () => !complete,
     async callback => {
       // Get page of 100 files
