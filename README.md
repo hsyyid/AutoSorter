@@ -19,7 +19,7 @@ The Python end uses NLTK and Sklearn to vectorize the text and run the KMeans cl
 
 ## Results
 
-Since this project was done in a time constrained time, we used an unsupervised algorithm (as we didn't have the resources
+Since this project was done in a time constrained environment, we used an unsupervised algorithm (as we didn't have the resources
 or time to create a good corpus of data) - thus, the results are not stellar. 
 
 However, the results we produced with our limited testing data shows a fair amount of accuracy in terms
