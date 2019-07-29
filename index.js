@@ -4,6 +4,8 @@ const watch = require("./watch.js");
 const storage = require("./storage.js");
 const whilst = require("async/whilst");
 
+const { API_URL, OAUTH_CLIENT_ID, OAUTH_CLIENT_SECRET } = process.env;
+
 exports.request = async (req, rtn) => {
   // TODO: Testing
   if (req.path === "/notifications") {
@@ -34,7 +36,7 @@ async function analyzeFiles(access_token, files, subjects) {
   // before requesting more to avoid rate limiting.
   // TODO: Do batch requests completely fix problem with rate limiting?
   let response = await (await fetch(
-    "***REMOVED***/ml",
+    `${API_URL}/ml`,
     {
       method: "POST",
       headers: {
@@ -53,8 +55,8 @@ async function analyzeFiles(access_token, files, subjects) {
 
 async function fetchAndAnalyze(uid, access_token, refresh_token, n_subjects) {
   const oauth2Client = new google.auth.OAuth2(
-    "***REMOVED***",
-    "***REMOVED***"
+    OAUTH_CLIENT_ID,
+    OAUTH_CLIENT_SECRET
   );
   oauth2Client.setCredentials({
     access_token,
@@ -109,8 +111,8 @@ async function fetchAndAnalyze(uid, access_token, refresh_token, n_subjects) {
 
 async function renameFolder(access_token, refresh_token, fileId, name) {
   const oauth2Client = new google.auth.OAuth2(
-    "***REMOVED***",
-    "***REMOVED***"
+    OAUTH_CLIENT_ID,
+    OAUTH_CLIENT_SECRET
   );
   oauth2Client.setCredentials({
     access_token,
@@ -160,7 +162,7 @@ async function writeChanges(drive, access_token, n_subjects, files, labels) {
   await watch.create(folderIds, access_token);
 
   // Place files in folders
-  fetch("***REMOVED***/ml?copy=true", {
+  fetch(`${API_URL}?copy=true`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json"

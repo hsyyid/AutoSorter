@@ -2,6 +2,8 @@ const fetch = require("node-fetch");
 const uuidv4 = require("uuid/v4");
 const Bluebird = require("bluebird");
 
+const { API_URL } = process.env;
+
 const create = async (access_token, folderIds) => {
   await Bluebird.each(folderIds, async fileId => {
     await (await fetch(
@@ -15,8 +17,7 @@ const create = async (access_token, folderIds) => {
         body: JSON.stringify({
           id: uuidv4(),
           type: "web_hook",
-          address:
-            "***REMOVED***/api/notifications"
+          address: `${API_URL}/api/notifications`
         })
       }
     )).json();
